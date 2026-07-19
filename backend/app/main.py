@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from backend.app.api.document_routes import router as document_router
+from backend.app.api.ai_routes import router as ai_router
 
 # إنشاء نسخة من تطبيق FastAPI
 app = FastAPI(
@@ -8,8 +9,9 @@ app = FastAPI(
     version="0.1.0"
 )
 
-# تسجيل الـ Router الجديد في التطبيق الرئيسي مع إضافة v1 كمعيار لتنظيم إصدارات الـ API
+# تسجيل الـ Routers في التطبيق الرئيسي مع الـ Versioning عالي الجودة
 app.include_router(document_router, prefix="/api/v1")
+app.include_router(ai_router, prefix="/api/v1")
 
 # أول Endpoint (Health Check)
 @app.get("/")

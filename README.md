@@ -61,3 +61,20 @@ qamar-tutor/
 
 #Note: All folders contain an __init__.py file to explicitly define them as Python packages.
 
+### 🤖 5. AI Assistant Integration (Groq API)
+- Switched the AI core infrastructure seamlessly to **Groq API** to utilize cutting-edge, ultra-fast open-source LLMs.
+- Configured **Meta's `llama-3.1-8b-instant`** as the core intelligence model for speedy and cost-effective responses.
+- Built a secure, central configuration layer using `python-dotenv` to load environment variables safely without hardcoding API keys.
+
+### 🛡️ 2. Architectural Highlights
+- **Layered Architecture:** Isolated the AI logic into a dedicated service layer (`GeminiService`), making provider swaps completely transparent to the router.
+- **API Endpoints:** Created `POST /api/v1/ai/test` inside `ai_routes.py` for testing prompt generation and system health checkups via Swagger UI.
+
+---
+
+## 🛠️ Installation & Setup
+
+1. **Environment Variables:** Create a `.env` file in the root directory and add your secret key:
+   ```env
+   GROQ_API_KEY=your_groq_api_key_here
+

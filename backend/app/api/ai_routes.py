@@ -2,29 +2,43 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from backend.app.services.gemini_service import gemini_service
 
-# 1. إنشاء Router مخصص لعمليات الذكاء الاصطناعي
 router = APIRouter(
     prefix="/ai",
     tags=["Artificial Intelligence"]
 )
 
-# 2. تحديد هيكل البيانات القادمة من الـ Frontend
+# 1. الموديل القديم للطلب التجريبي
 class PromptRequest(BaseModel):
     prompt: str
 
-# 3. إنشاء الـ Endpoint وتوصيلها بالشيف
 @router.post("/test")
 def test_gemini(request: PromptRequest):
-    """
-    Accepts a raw text prompt, sends it to Gemini Service, 
-    and returns the fully generated AI response.
-    """
-    # نأخذ الـ prompt ونمرره للشيف عشان يكلم جوجل جيميني
     ai_response = gemini_service.generate_text(request.prompt)
-    
-    # السطر السحري الناقص: إرجاع النتيجة للـ Swagger UI
     return {
         "status": "success",
         "prompt_sent": request.prompt,
         "response": ai_response
+    }
+
+# 2. 🚀 الموديل الجديد لجلسة RAG
+class AskPdfRequest(BaseModel):
+    document_text: str
+    question: str
+
+# 🛑 تأكدي من السطر ده بالظبط: مرري AskPdfRequest للدالة
+@router.post("/ask-pdf")
+def ask_pdf(request: AskPdfRequest): 
+    """
+    Accepts text extracted from a PDF and a question, 
+    then returns an AI-generated answer based strictly on the text.
+    """
+    ai_answer = gemini_service.ask_with_context(
+        context=request.document_text, 
+        question=request.question
+    )
+    
+    return {
+        "status": "success",
+        "question_asked": request.question,
+        "ai_answer": ai_answer
     }

@@ -21,3 +21,9 @@ def read_root():
         "project": "Qamar Tutor",
         "message": "Welcome to Qamar Tutor AI Backend!"
     }
+
+    # استدعاء الـ router الجديد في أول الملف
+from backend.app.api.auth import router as auth_router
+
+# انزلي تحت بعد ما تعملي app = FastAPI() وضيفي السطر ده:
+app.include_router(auth_router)

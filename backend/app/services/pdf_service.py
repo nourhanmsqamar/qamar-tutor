@@ -1,38 +1,27 @@
-import pypdf
+import fitz  # PyMuPDF
 from fastapi import HTTPException
 
-class PDFService:
-    @staticmethod
-    def extract_text_from_pdf(file_path: str) -> str:
+class PDFService:  # 👈 خلينا الحروف دي كلها كابيتال
+    def extract_text_from_bytes(self, file_bytes: bytes) -> str:
         """
-        Takes a local PDF file path, extracts all available text, 
-        and returns it as a single concatenated string.
+        Reads a PDF file from memory (bytes) and extracts all text.
         """
         try:
+            pdf_document = fitz.open(stream=file_bytes, filetype="pdf")
             extracted_text = ""
             
-            # 1. Open and read the PDF file
-            with open(file_path, "rb") as file:
-                reader = pypdf.PdfReader(file)
+            for page_num in range(len(pdf_document)):
+                page = pdf_document.load_page(page_num)
+                extracted_text += page.get_text("text") + "\n"
                 
-                # 2. Loop through every page and extract text
-                for page_num in range(len(reader.pages)):
-                    page = reader.pages[page_num]
-                    page_text = page.extract_text()
-                    if page_text:
-                        extracted_text += page_text + "\n"
-            
-            # 3. Check if we actually found any text
-            if not extracted_text.strip():
-                raise HTTPException(
-                    status_code=400, 
-                    detail="The uploaded PDF appears to be empty or scanned (images only). Qamar Tutor currently supports text-based PDFs."
-                )
-                
-            return extracted_text
+            pdf_document.close()
+            return extracted_text.strip()
             
         except Exception as e:
             raise HTTPException(
                 status_code=500, 
-                detail=f"An error occurred while processing the PDF: {str(e)}"
+                detail=f"Failed to extract text from PDF: {str(e)}"
             )
+
+# 👈 عملنا نسخة من الكلاس عشان الـ AI Router يستخدمها
+pdf_service = PDFService()

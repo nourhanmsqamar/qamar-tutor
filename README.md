@@ -111,4 +111,7 @@ Once the terminal logs `Application startup complete`, open your browser to veri
 * *Usage:* Access this UI to visually review request models, inject sample context/questions payloads, and dynamically test live API responses.
 
 
-
+### 🔗 3. End-to-End RAG Pipeline Integration (Session 6)
+- **Dynamic File Processing:** Engineered the `POST /api/v1/ai/ask-file` endpoint to accept simultaneous file uploads and text queries via `multipart/form-data`.
+- **On-the-Fly Extraction:** Integrated the `PDFService` (using PyMuPDF) directly into the router logic to parse documents entirely in-memory without saving them to disk.
+- **Full-Circle QA System:** Successfully connected the document parser with the Groq RAG engine, allowing users to upload a custom PDF and receive instant, context-grounded AI answers in a single API call.

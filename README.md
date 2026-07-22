@@ -266,4 +266,4 @@ This project is licensed under the MIT License.
 **Name**: Nourhan Qamar  
 **Role**: Artificial Intelligence Student  
 **GitHub**: [https://github.com/nourhanmsqamar](https://github.com/nourhanmsqamar)  
-**LinkedIn**: [Placeholder for LinkedIn]
+**LinkedIn**: [https://www.linkedin.com/in/nourhan-qamar?utm_source=share_via&utm_content=profile&utm_medium=member_android]

@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from backend.app.api.document_routes import router as document_router
 from backend.app.api.ai_routes import router as ai_router
+from backend.app.api.chat_routes import router as chat_router
 
 # إنشاء نسخة من تطبيق FastAPI
 app = FastAPI(
@@ -12,6 +13,7 @@ app = FastAPI(
 # تسجيل الـ Routers في التطبيق الرئيسي مع الـ Versioning عالي الجودة
 app.include_router(document_router, prefix="/api/v1")
 app.include_router(ai_router, prefix="/api/v1")
+app.include_router(chat_router, prefix="/api/v1")
 
 # أول Endpoint (Health Check)
 @app.get("/")

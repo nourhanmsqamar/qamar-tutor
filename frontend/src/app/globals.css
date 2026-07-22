@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #0B0E14; /* Deep space black/slate */
+  --color-foreground: #E2E8F0; /* Soft lunar silver */
+  
+  --color-primary: #3B82F6; /* Bright night sky blue */
+  --color-primary-foreground: #FFFFFF;
+  
+  --color-secondary: #1E293B; /* Slate 800 */
+  --color-secondary-foreground: #F8FAFC;
+  
+  --color-accent: #6366F1; /* Indigo */
+  --color-accent-foreground: #FFFFFF;
+  
+  --color-muted: #1E293B;
+  --color-muted-foreground: #94A3B8;
+  
+  --color-border: #334155;
+  --color-input: #1E293B;
+  --color-ring: #3B82F6;
+  
+  --color-card: #0F172A; /* Slightly lighter deep space */
+  --color-card-foreground: #E2E8F0;
+  
+  --radius-sm: 0.3rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.8rem;
+  --radius-xl: 1rem;
+}
+
+/* Ensure background color applies globally */
+html, body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+}

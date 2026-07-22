@@ -6,6 +6,8 @@ from backend.app.core.security import get_current_user
 from backend.app.services.pdf_service import pdf_service
 from backend.app.services.gemini_service import gemini_service
 from backend.app.services.chat_service import chat_service
+from backend.app.core.config import settings
+from backend.app.services.rag import preprocessing_service, chunking_service
 
 router = APIRouter(
     prefix="/ai",
@@ -63,9 +65,19 @@ async def ask_file(
             content=question
         )
 
+        # --- NEW RAG PHASE 1 ---
+        cleaned_text = preprocessing_service.clean_text(extracted_text)
+        chunks = chunking_service.chunk_text(
+            text=cleaned_text,
+            max_chunk_size=settings.RAG_CHUNK_SIZE,
+            overlap=settings.RAG_CHUNK_OVERLAP
+        )
+        # Temporarily concatenate chunk contents to preserve existing AI endpoint behavior
+        rag_context = "\n\n".join([chunk["content"] for chunk in chunks])
+        
         # 7. إرسال النص والسؤال لشيف الذكاء الاصطناعي
         ai_answer = gemini_service.ask_with_context(
-            context=extracted_text, 
+            context=rag_context, 
             question=question
         )
         

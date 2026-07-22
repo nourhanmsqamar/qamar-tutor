@@ -7,7 +7,7 @@ from backend.app.services.pdf_service import pdf_service
 from backend.app.services.gemini_service import gemini_service
 from backend.app.services.chat_service import chat_service
 from backend.app.core.config import settings
-from backend.app.services.rag import preprocessing_service, chunking_service
+from backend.app.services.rag import preprocessing_service, chunking_service, vector_store_service
 
 router = APIRouter(
     prefix="/ai",
@@ -72,6 +72,14 @@ async def ask_file(
             max_chunk_size=settings.RAG_CHUNK_SIZE,
             overlap=settings.RAG_CHUNK_OVERLAP
         )
+        # --- NEW RAG PHASE 2 (Indexing) ---
+        vector_store_service.store_chunks(
+            chunks=chunks,
+            document_id=document.id,
+            user_id=current_user.id,
+            filename=file.filename
+        )
+        
         # Temporarily concatenate chunk contents to preserve existing AI endpoint behavior
         rag_context = "\n\n".join([chunk["content"] for chunk in chunks])
         

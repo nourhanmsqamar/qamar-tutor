@@ -21,5 +21,8 @@ class Settings:
     # RAG Settings
     RAG_CHUNK_SIZE: int = int(os.getenv("RAG_CHUNK_SIZE", 800))
     RAG_CHUNK_OVERLAP: int = int(os.getenv("RAG_CHUNK_OVERLAP", 150))
+    CHROMA_DB_DIR: str = os.getenv("CHROMA_DB_DIR", "./chroma_db")
+    EMBEDDING_MODEL_NAME: str = os.getenv("EMBEDDING_MODEL_NAME", "paraphrase-multilingual-MiniLM-L12-v2")
+    CHROMA_COLLECTION_NAME: str = os.getenv("CHROMA_COLLECTION_NAME", "qamar_documents")
 
 settings = Settings()

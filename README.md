@@ -158,7 +158,7 @@ Create a `.env` file in the root directory and populate it:
 PROJECT_NAME="Qamar Tutor"
 
 # Security
-SECRET_KEY="your-super-secret-key"
+SECRET_KEY="******"
 ALGORITHM="HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 
@@ -166,7 +166,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES=30
 DATABASE_URL="sqlite:///./qamar_tutor.db"
 
 # Groq AI
-GROQ_API_KEY="your-groq-api-key"
+GROQ_API_KEY="********"
 
 # RAG Configuration
 RAG_CHUNK_SIZE=800

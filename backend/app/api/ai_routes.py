@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException, UploadFile, File, Form
-from pydantic import BaseModel
-from backend.app.services.gemini_service import gemini_service
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
+from backend.app.models.user import User
+from backend.app.core.security import get_current_user
+# باقي الـ Imports الخاصة بـ Services بتاعتك زي GeminiService / PDFService لو موجودة
 from backend.app.services.pdf_service import pdf_service  # 👈 استدعينا مطبخ الـ PDF
 
 router = APIRouter(
@@ -52,3 +53,11 @@ async def ask_file(
             status_code=500, 
             detail=f"Pipeline Integration Error: {str(e)}"
         )
+
+@router.post("/test")
+def test_ai(prompt: str, current_user: User = Depends(get_current_user)):
+    """إندبوينت محمي: لا يمكن استخدامه إلا بعد تسجيل الدخول"""
+    return {
+        "message": f"أهلاً بك يا {current_user.email}! تم التحقق من هويتك بنجاح.",
+        "prompt_received": prompt
+    }

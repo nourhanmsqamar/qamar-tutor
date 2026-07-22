@@ -49,4 +49,42 @@ class VectorStoreService:
             documents=texts
         )
 
+    def search(self, query: str, user_id: int, document_id: int = None, top_k: int = 5) -> List[Dict]:
+        """
+        Searches ChromaDB for the most relevant chunks using semantic search.
+        Returns a list of dicts: {"content": str, "metadata": dict, "distance": float}
+        """
+        # 1. Generate query embedding
+        query_embedding = embedding_service.generate_embeddings([query])[0]
+        
+        # 2. Build where filter
+        where_filter = {"user_id": user_id}
+        if document_id is not None:
+            where_filter = {
+                "$and": [
+                    {"user_id": user_id},
+                    {"document_id": document_id}
+                ]
+            }
+            
+        # 3. Query ChromaDB
+        results = self.collection.query(
+            query_embeddings=[query_embedding],
+            n_results=top_k,
+            where=where_filter,
+            include=["documents", "metadatas", "distances"]
+        )
+        
+        # 4. Format results
+        parsed_results = []
+        if results and results.get('documents') and results['documents'][0]:
+            for i in range(len(results['documents'][0])):
+                parsed_results.append({
+                    "content": results['documents'][0][i],
+                    "metadata": results['metadatas'][0][i],
+                    "distance": results['distances'][0][i] if results.get('distances') else None
+                })
+                
+        return parsed_results
+
 vector_store_service = VectorStoreService()

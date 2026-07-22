@@ -7,7 +7,7 @@ from backend.app.services.pdf_service import pdf_service
 from backend.app.services.gemini_service import gemini_service
 from backend.app.services.chat_service import chat_service
 from backend.app.core.config import settings
-from backend.app.services.rag import preprocessing_service, chunking_service, vector_store_service
+from backend.app.services.rag import preprocessing_service, chunking_service, vector_store_service, context_builder_service
 
 router = APIRouter(
     prefix="/ai",
@@ -80,8 +80,18 @@ async def ask_file(
             filename=file.filename
         )
         
-        # Temporarily concatenate chunk contents to preserve existing AI endpoint behavior
-        rag_context = "\n\n".join([chunk["content"] for chunk in chunks])
+        # --- NEW RAG PHASE 3 (Retrieval & Context Building) ---
+        retrieved_chunks = vector_store_service.search(
+            query=question,
+            user_id=current_user.id,
+            document_id=document.id,
+            top_k=settings.RAG_TOP_K
+        )
+        
+        rag_context = context_builder_service.build_context(
+            retrieved_chunks=retrieved_chunks,
+            max_chars=settings.MAX_CONTEXT_CHARS
+        )
         
         # 7. إرسال النص والسؤال لشيف الذكاء الاصطناعي
         ai_answer = gemini_service.ask_with_context(

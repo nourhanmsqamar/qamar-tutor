@@ -23,7 +23,8 @@ if os.getenv("DATABASE_URL"):
 
 from backend.app.core.database import Base
 from backend.app.models.user import User
-
+from backend.app.models.document import Document
+from backend.app.models.chat import ChatSession, Message
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,

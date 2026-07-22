@@ -1,8 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
+from sqlalchemy.orm import Session
+from backend.app.core.database import get_db
 from backend.app.models.user import User
 from backend.app.core.security import get_current_user
-# باقي الـ Imports الخاصة بـ Services بتاعتك زي GeminiService / PDFService لو موجودة
-from backend.app.services.pdf_service import pdf_service  # 👈 استدعينا مطبخ الـ PDF
+from backend.app.services.pdf_service import pdf_service
+from backend.app.services.gemini_service import gemini_service
+from backend.app.services.chat_service import chat_service
 
 router = APIRouter(
     prefix="/ai",
@@ -15,7 +18,9 @@ router = APIRouter(
 @router.post("/ask-file")
 async def ask_file(
     question: str = Form(...),          # استقبال السؤال
-    file: UploadFile = File(...)        # استقبال ملف الـ PDF 
+    file: UploadFile = File(...),       # استقبال ملف الـ PDF 
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     The Ultimate Pipeline: Uploads a PDF, extracts text on the fly,
@@ -35,15 +40,47 @@ async def ask_file(
         if not extracted_text:
             raise HTTPException(status_code=400, detail="The PDF appears to be empty or contains no readable text.")
         
-        # 4. إرسال النص والسؤال لشيف الذكاء الاصطناعي
+        # 4. Create Document record
+        document = chat_service.create_document(
+            db=db,
+            user_id=current_user.id,
+            filename=file.filename,
+            original_filename=file.filename
+        )
+        
+        # 5. Create Chat Session
+        session = chat_service.get_or_create_session(
+            db=db,
+            user_id=current_user.id,
+            document_id=document.id
+        )
+        
+        # 6. Save user question
+        chat_service.save_message(
+            db=db,
+            session_id=session.id,
+            role="user",
+            content=question
+        )
+
+        # 7. إرسال النص والسؤال لشيف الذكاء الاصطناعي
         ai_answer = gemini_service.ask_with_context(
             context=extracted_text, 
             question=question
         )
         
+        # 8. Save assistant answer
+        chat_service.save_message(
+            db=db,
+            session_id=session.id,
+            role="assistant",
+            content=ai_answer
+        )
+        
         return {
             "status": "success",
             "filename": file.filename,
+            "session_id": session.id,
             "question_asked": question,
             "ai_answer": ai_answer
         }
